@@ -6,7 +6,7 @@
 /*   By: sinawara <sinawara@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 15:42:20 by sinawara          #+#    #+#             */
-/*   Updated: 2024/10/21 11:52:56 by sinawara         ###   ########.fr       */
+/*   Updated: 2024/10/22 16:13:51 by sinawara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,8 @@ char	*ft_strdup(const char *src)
 	int		i;
 	char	*res;
 
+	if (!src)
+		return (NULL);
 	i = 0;
 	while (src[i])
 		i++;

@@ -6,13 +6,12 @@
 /*   By: sinawara <sinawara@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 15:42:37 by sinawara          #+#    #+#             */
-/*   Updated: 2024/10/21 14:43:10 by sinawara         ###   ########.fr       */
+/*   Updated: 2024/10/22 17:28:05 by sinawara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-// Extract a line from the stash up to the first newline or end
 char	*extract_line(char *stash)
 {
 	size_t	i;
@@ -22,9 +21,9 @@ char	*extract_line(char *stash)
 	while (stash[i] && stash[i] != '\n')
 		i++;
 	if (stash[i] == '\n')
-		line = malloc(sizeof(char) * (i + 2)); //adds place for '\n' && '\0'
+		line = malloc(sizeof(char) * (i + 2));
 	else
-		line = malloc(sizeof(char) * (i + 1));//adds place for '\0'
+		line = malloc(sizeof(char) * (i + 1));
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -42,13 +41,14 @@ char	*extract_line(char *stash)
 	return (line);
 }
 
-// Save the leftover content after the first newline
 char	*save_leftover(char *stash)
 {
 	char	*leftover;
 	size_t	i;
 	size_t	j;
 
+	if(!stash)
+		return (NULL);
 	i = 0;
 	j = 0;
 	while (stash[i] && stash[i] != '\n')
@@ -79,12 +79,25 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE > 2147483647)
 		return (NULL);
-	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	while (bytes_read >= 0)
+	bytes_read = 1;
+	while (bytes_read > 0)
 	{
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read == -1)
+		{
+			free(stash);
+			stash = NULL;
+			return (NULL);
+		}
 		buffer[bytes_read] = '\0';
 		temp = stash;
 		stash = ft_strjoin(stash, buffer);
+		if (!stash)
+		{
+			free(temp);
+			temp = NULL; //added just to see
+			return (NULL);
+		}
 		free(temp);
 		if (ft_strchr(stash, '\n'))
 		{
@@ -92,16 +105,16 @@ char	*get_next_line(int fd)
 			stash = save_leftover(stash);
 			return (line);
 		}
-		bytes_read--;
 	}
 	if (!stash || !*stash)
-    {
-        free(stash);
-        stash = NULL;
-    }
+	{
+		free(stash);
+		stash = NULL;
+	}
 	if (stash && *stash)
 	{
 		line = extract_line(stash);
+		free (stash);
 		stash = NULL;
 		return (line);
 	}
@@ -125,6 +138,6 @@ int	main(void)
 	}
 
 	close(fd);
-	system("leaks a.out");
+	//system("leaks a.out");
 	return (0);
 }
