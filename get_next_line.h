@@ -6,7 +6,7 @@
 /*   By: sinawara <sinawara@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 14:55:46 by sinawara          #+#    #+#             */
-/*   Updated: 2024/10/22 14:20:41 by sinawara         ###   ########.fr       */
+/*   Updated: 2024/10/23 14:20:13 by sinawara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,5 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t size);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strdup(const char *src);
-char	*extract_line(char *stash);
-char	*save_leftover(char *stash);
 
 #endif

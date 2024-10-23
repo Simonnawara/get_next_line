@@ -6,13 +6,13 @@
 /*   By: sinawara <sinawara@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 15:42:37 by sinawara          #+#    #+#             */
-/*   Updated: 2024/10/22 17:28:05 by sinawara         ###   ########.fr       */
+/*   Updated: 2024/10/23 15:47:16 by sinawara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*extract_line(char *stash)
+static char	*extract_line(char *stash)
 {
 	size_t	i;
 	char	*line;
@@ -41,14 +41,12 @@ char	*extract_line(char *stash)
 	return (line);
 }
 
-char	*save_leftover(char *stash)
+static char	*save_leftover(char *stash)
 {
 	char	*leftover;
 	size_t	i;
 	size_t	j;
 
-	if(!stash)
-		return (NULL);
 	i = 0;
 	j = 0;
 	while (stash[i] && stash[i] != '\n')
@@ -60,13 +58,38 @@ char	*save_leftover(char *stash)
 	}
 	leftover = malloc(ft_strlen(stash) - i + 1);
 	if (!leftover)
+	{
+		free(stash);
 		return (NULL);
+	}
 	i++;
 	while (stash[i])
 		leftover[j++] = stash[i++];
 	leftover[j] = '\0';
 	free(stash);
 	return (leftover);
+}
+
+static char	*handle_final_line(char **stash)
+{
+	char	*line;
+
+	if (!*stash || !**stash)
+	{
+		free(*stash);
+		*stash = NULL;
+		return (NULL);
+	}
+	line = extract_line(*stash);
+	if (!line)
+	{
+		free(*stash);
+		*stash = NULL;
+		return (NULL);
+	}
+	free(*stash);
+	*stash = NULL;
+	return (line);
 }
 
 char	*get_next_line(int fd)
@@ -95,32 +118,27 @@ char	*get_next_line(int fd)
 		if (!stash)
 		{
 			free(temp);
-			temp = NULL; //added just to see
+			temp = NULL;
 			return (NULL);
 		}
 		free(temp);
 		if (ft_strchr(stash, '\n'))
 		{
 			line = extract_line(stash);
+			if (!line)
+			{
+				free (stash);
+				stash = NULL;
+				return (NULL);
+			}
 			stash = save_leftover(stash);
 			return (line);
 		}
 	}
-	if (!stash || !*stash)
-	{
-		free(stash);
-		stash = NULL;
-	}
-	if (stash && *stash)
-	{
-		line = extract_line(stash);
-		free (stash);
-		stash = NULL;
-		return (line);
-	}
-	return (NULL);
+	return (handle_final_line(&stash));
 }
-int	main(void)
+
+/* int	main(void)
 {
 	int	fd = open("t.txt", O_RDONLY);
 	char	*line;
@@ -140,4 +158,4 @@ int	main(void)
 	close(fd);
 	//system("leaks a.out");
 	return (0);
-}
+} */
