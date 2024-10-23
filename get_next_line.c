@@ -92,53 +92,60 @@ static char	*handle_final_line(char **stash)
 	return (line);
 }
 
-char	*get_next_line(int fd)
+char	*read_and_update_stash(int fd, char **stash)
 {
-	static char	*stash;
-	char		buffer[BUFFER_SIZE + 1];
-	char		*temp;
-	char		*line;
-	ssize_t		bytes_read;
+	char	buffer[BUFFER_SIZE + 1];
+	char	*temp;
+	ssize_t	bytes_read;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE > 2147483647)
-		return (NULL);
 	bytes_read = 1;
 	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read == -1)
 		{
+			free(*stash);
+			*stash = NULL;
+			return (NULL);
+		}
+		buffer[bytes_read] = '\0';
+		temp = *stash;
+		*stash = ft_strjoin(*stash, buffer);
+		free(temp);
+		if (!*stash)
+			return (NULL);
+		if (ft_strchr(*stash, '\n'))
+			break ;
+	}
+	return (*stash);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	*stash;
+	char		*line;
+
+	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE > 2147483647)
+		return (NULL);
+	stash = read_and_update_stash(fd, &stash);
+	if (!stash)
+		return (NULL);
+	if (ft_strchr(stash, '\n'))
+	{
+		line = extract_line(stash);
+		if (!line)
+		{
 			free(stash);
 			stash = NULL;
 			return (NULL);
 		}
-		buffer[bytes_read] = '\0';
-		temp = stash;
-		stash = ft_strjoin(stash, buffer);
-		if (!stash)
-		{
-			free(temp);
-			temp = NULL;
-			return (NULL);
-		}
-		free(temp);
-		if (ft_strchr(stash, '\n'))
-		{
-			line = extract_line(stash);
-			if (!line)
-			{
-				free (stash);
-				stash = NULL;
-				return (NULL);
-			}
-			stash = save_leftover(stash);
-			return (line);
-		}
+		stash = save_leftover(stash);
+		return (line);
 	}
 	return (handle_final_line(&stash));
 }
 
-/* int	main(void)
+int	main(void)
 {
 	int	fd = open("t.txt", O_RDONLY);
 	char	*line;
@@ -158,4 +165,4 @@ char	*get_next_line(int fd)
 	close(fd);
 	//system("leaks a.out");
 	return (0);
-} */
+}
