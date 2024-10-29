@@ -6,7 +6,7 @@
 /*   By: sinawara <sinawara@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 15:42:37 by sinawara          #+#    #+#             */
-/*   Updated: 2024/10/23 15:47:16 by sinawara         ###   ########.fr       */
+/*   Updated: 2024/10/25 12:44:51 by sinawara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ static char	*handle_final_line(char **stash)
 	return (line);
 }
 
-char	*read_and_update_stash(int fd, char **stash)
+static char	*read_and_update_stash(int fd, char **stash)
 {
 	char	buffer[BUFFER_SIZE + 1];
 	char	*temp;
@@ -145,6 +145,9 @@ char	*get_next_line(int fd)
 	return (handle_final_line(&stash));
 }
 
+/*
+# include <stdio.h>
+
 int	main(void)
 {
 	int	fd = open("t.txt", O_RDONLY);
@@ -165,4 +168,4 @@ int	main(void)
 	close(fd);
 	//system("leaks a.out");
 	return (0);
-}
+} */

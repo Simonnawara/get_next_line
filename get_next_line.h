@@ -6,7 +6,7 @@
 /*   By: sinawara <sinawara@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 14:55:46 by sinawara          #+#    #+#             */
-/*   Updated: 2024/10/23 14:20:13 by sinawara         ###   ########.fr       */
+/*   Updated: 2024/10/24 16:04:29 by sinawara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 
 # include <stdlib.h>
 # include <unistd.h>
-# include <stdio.h>
 # include <fcntl.h>
 
 char	*get_next_line(int fd);
